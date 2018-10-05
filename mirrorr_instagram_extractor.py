@@ -10,6 +10,7 @@ import urllib
 import urllib.request
 from selenium.webdriver.common.keys import Keys
 from IPython.display import Image
+import json
 
 
 def load_profile_page(userid,driver_path='./chromedriver'):
@@ -39,9 +40,8 @@ def extract_following(main_driver):
 def download_profile_pic(userid,output_path='./'):
     main_driver = load_profile_page(userid=userid)
     profile_pic_uri = extract_profile_pic_uri(main_driver)
-    urllib.request.urlretrieve(profile_pic_uri,output_path+userid+'.jpg')
-    
-class InstaUser:
+        
+class InstaUser():
     def __init__(self,userid):
         self.main_driver = None
         self.userid = userid
@@ -53,6 +53,8 @@ class InstaUser:
         self.screenshot = None
         self.fileout = None
         self.axn = None
+        self.result = None
+        
     def init_driver(self):
         self.main_driver = load_profile_page(userid=self.userid)
         self.axn = ActionChains(self.main_driver)
@@ -84,15 +86,35 @@ class InstaUser:
     def screenshot_main(self,fileout='main-page.png'):
         self.main_driver.get_screenshot_as_file(fileout)
         self.fileout=fileout
+
+    def screenshot_lower(self,fileout='main-page.png'):
+        self.scroll_down_page()
+        self.scroll_down_page()
+        self.scroll_down_page()
+        self.main_driver.implicitly_wait(2)
+        self.main_driver.get_screenshot_as_file(fileout)
+        self.fileout=fileout        
         
     def to_csv(self, csvfile):
         print(csvfile)
         
     def to_db(self, db_host, db_password, db_table):
         print('write to db')    
-        
+
+    def toJSON(self):
+        result = {'userid':self.userid, 
+        'posts':self.post_count,
+        'followers': self.followers, 
+        'following': self.following,
+        'profile_pic_uri':self.profile_pic_uri
+         }
+        self.result = result
+    
+    def get_info(self):
+        self.toJSON()
+        return self.result
+    
     def quick_demo(self):
         self.init_driver()
         self.extract_profile_infos()
-        self.screenshot_main()
-        
+        self.screenshot_main()    
