@@ -11,7 +11,14 @@ import urllib.request
 from selenium.webdriver.common.keys import Keys
 from IPython.display import Image
 import json
+from PIL import Image as IMG
+import requests
+from io import BytesIO
 
+def get_image_from_uri(img_uri,img_file):
+    response = requests.get(img_uri)
+    img = IMG.open(BytesIO(response.content))
+    img.save(img_file)
 
 def load_profile_page(userid,driver_path='./chromedriver'):
     options = webdriver.ChromeOptions()
@@ -54,6 +61,7 @@ class InstaUser():
         self.fileout = None
         self.axn = None
         self.result = None
+        self.thumbnail = None
         
     def init_driver(self):
         self.main_driver = load_profile_page(userid=self.userid)
@@ -94,6 +102,11 @@ class InstaUser():
         self.main_driver.implicitly_wait(2)
         self.main_driver.get_screenshot_as_file(fileout)
         self.fileout=fileout        
+        
+    def download_profile_pic(self, img_file='thumbnail.png'):
+        self.fileout=img_file
+        get_image_from_uri(img_uri=self.profile_pic_uri,img_file=img_file)
+        
         
     def to_csv(self, csvfile):
         print(csvfile)
