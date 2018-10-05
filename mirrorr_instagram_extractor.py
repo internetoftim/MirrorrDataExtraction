@@ -53,7 +53,6 @@ class InstaUser:
         self.screenshot = None
         self.fileout = None
         self.axn = None
-        self.init_driver()
     def init_driver(self):
         self.main_driver = load_profile_page(userid=self.userid)
         self.axn = ActionChains(self.main_driver)
@@ -91,3 +90,9 @@ class InstaUser:
         
     def to_db(self, db_host, db_password, db_table):
         print('write to db')    
+        
+    def quick_demo(self):
+        self.init_driver()
+        self.extract_profile_infos()
+        self.screenshot_main()
+        
