@@ -5,11 +5,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.action_chains import ActionChains
-import requests, re, json ,pprint
+import requests, re, json 
 import urllib
 import urllib.request
 from selenium.webdriver.common.keys import Keys
-from IPython.display import Image
 import json
 from PIL import Image as IMG
 import requests
