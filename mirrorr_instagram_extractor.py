@@ -120,8 +120,8 @@ class InstaUser():
         'following': self.following,
         'profile_pic_uri':self.profile_pic_uri
          }
-        self.result = result
-    
+        self.result = json.dumps(result)
+   
     def get_info(self):
         self.toJSON()
         return self.result

@@ -16,6 +16,7 @@
 from flask import Flask
 import mirrorr_instagram_extractor
 from mirrorr_instagram_extractor import InstaUser
+import jsonify
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -35,9 +36,10 @@ def userid_landing():
 def userid(name):
     user=InstaUser(userid=name)
     user.quick_demo()
-
+    
+    #return name + ' has ' + user.followers + ' followers'
+    #return jsonify(user.get_info())
     return user.get_info()
-
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
