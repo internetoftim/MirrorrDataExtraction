@@ -26,7 +26,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return 'Hello World!'
+    return "'<h1>Instagram Profile Scraping Demo</h1>"
 
 @app.route('/userid')
 def userid_landing():
@@ -36,10 +36,11 @@ def userid_landing():
 def userid(name):
     user=InstaUser(userid=name)
     user.quick_demo()
-    
-    #return name + ' has ' + user.followers + ' followers'
-    #return jsonify(user.get_info())
-    return user.get_info()
+    out_html = user.get_info() + "<div><img src="+ user.profile_pic_uri+"></div>" 
+
+    return out_html
+
+
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
