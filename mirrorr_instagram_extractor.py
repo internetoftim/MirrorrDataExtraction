@@ -13,6 +13,7 @@ import json
 from PIL import Image as IMG
 import requests
 from io import BytesIO
+import datetime,time
 
 def get_image_from_uri(img_uri,img_file):
     response = requests.get(img_uri)
@@ -46,7 +47,10 @@ def extract_following(main_driver):
 def download_profile_pic(userid,output_path='./'):
     main_driver = load_profile_page(userid=userid)
     profile_pic_uri = extract_profile_pic_uri(main_driver)
-        
+
+def get_timestamp():
+    return datetime.datetime.utcnow().isoformat(sep=' ')
+    
 class InstaUser():
     def __init__(self,userid):
         self.main_driver = None
@@ -114,7 +118,8 @@ class InstaUser():
         print('write to db')    
 
     def toJSON(self):
-        result = {'userid':self.userid, 
+        result = {'date_extracted':get_timestamp(),
+        'userid':self.userid, 
         'posts':self.post_count,
         'followers': self.followers, 
         'following': self.following,
