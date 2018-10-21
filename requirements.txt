@@ -1,3 +1,4 @@
+jupyter
 PyHamcrest>=1.9.0
 Flask==1.0.2
 selenium==3.14.1
