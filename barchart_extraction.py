@@ -23,8 +23,46 @@ import arrow
 import datetime
 from dateutil.parser import parse
 import weasyprint 
+from google.cloud import storage
 
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a blob from the bucket."""
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob(source_blob_name)
+        blob.download_to_filename(destination_file_name)
+        print('Blob {} downloaded to {}.'.format(
+            source_blob_name,
+            destination_file_name))
+    except:
+        print('File not available')
+        
+def upload_blob(bucket_name, source_file_name, destination_blob_name):
+#     """Uploads a file to the bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
 
+    blob.upload_from_filename(source_file_name)
+
+    print('File {} uploaded to {}.'.format(
+        source_file_name,
+        destination_blob_name))
+    
+def update_file(bucket_name,name,pdf_filename):
+    download_blob(bucket_name='brextract', 
+                  source_blob_name='csv/'+ name + '.csv',
+                  destination_file_name= name + '.csv')
+
+    upload_blob(bucket_name='brextract', 
+                source_file_name= name + '.csv', 
+                destination_blob_name='csv/'+ name + '.csv')  
+    upload_blob(bucket_name='brextract', 
+                source_file_name=pdf_filename, 
+                destination_blob_name='screenshots/'+name + '/' + pdf_filename)      
+
+    
 def get_capture_timestamp():
     return datetime.datetime.now()
 def get_capture_date(timestamp):
@@ -79,8 +117,15 @@ def extract_barchart_site(input_url='https://www.barchart.com/futures/quotes/ZW*
     capture_time = get_capture_time(timestamp=capture_timestamp)
     capture_stamp = get_capture_time_filename(timestamp=capture_timestamp)    
     driver = load_site(input_url=input_url)
+    
     output_file = name + ".csv"    
+    output_screenshot = name+'_'+capture_stamp+'.pdf'
     test_out = extract_left_strike(webdriver=driver)
+
+    download_blob(bucket_name='brextract', 
+                  source_blob_name='csv/'+ output_file,
+                  destination_file_name= output_file)
+    
     with open(output_file, write_option) as csvfile:
         writer = csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(["Date",capture_date])
@@ -96,8 +141,15 @@ def extract_barchart_site(input_url='https://www.barchart.com/futures/quotes/ZW*
             writer.writerow(i)
             
         writer.writerow([])
-        screenshot_page(webdriver=driver,output_file=name+'_'+capture_stamp+'.pdf')
-
+        screenshot_page(webdriver=driver,output_file=output_screenshot)
+        
+    upload_blob(bucket_name='brextract', 
+                source_file_name= output_file, 
+                destination_blob_name='csv/'+ output_file)  
+    upload_blob(bucket_name='brextract', 
+                source_file_name=output_screenshot, 
+                destination_blob_name='screenshots/'+name + '/' + output_screenshot)      
+    print('Successfully uploaded code uri')
 
 def extract_barchart_code(input_code='ZW*0'\
                          ,name='wheat',write_option='a'):
@@ -107,8 +159,16 @@ def extract_barchart_code(input_code='ZW*0'\
     capture_time = get_capture_time(timestamp=capture_timestamp)
     capture_stamp = get_capture_time_filename(timestamp=capture_timestamp)    
     driver = load_site(input_url=input_url)
+    
     output_file = name + ".csv"    
+    output_screenshot = name+'_'+capture_stamp+'.pdf'
+
     test_out = extract_left_strike(webdriver=driver)
+    
+    download_blob(bucket_name='brextract', 
+                  source_blob_name='csv/'+ output_file,
+                  destination_file_name= output_file)
+    
     with open(output_file, write_option) as csvfile:
         writer = csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(["Date",capture_date])
@@ -124,4 +184,12 @@ def extract_barchart_code(input_code='ZW*0'\
             writer.writerow(i)
             
         writer.writerow([])
-        screenshot_page(webdriver=driver,output_file=name+'_'+capture_stamp+'.pdf')
+        screenshot_page(webdriver=driver,output_file=output_screenshot)
+        
+    upload_blob(bucket_name='brextract', 
+                source_file_name= output_file, 
+                destination_blob_name='csv/'+ output_file)  
+    upload_blob(bucket_name='brextract', 
+                source_file_name=output_screenshot, 
+                destination_blob_name='screenshots/'+name + '/' + output_screenshot)            
+    print('Successfully uploaded code workflow')

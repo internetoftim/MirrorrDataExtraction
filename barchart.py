@@ -60,9 +60,13 @@ def data():
 
     except:
         out = "Barchart Scraping Demo: enter /extract?code=<company>"
+        
     try:
         input_url = request.args.get('url')
+        filename = request.args.get('file')        
         print('url is: ' + input_url)
+        print('filename is: ' + filename)
+        
         extract_barchart_site(input_url=input_url,write_option='a',name=filename)
         return "<h1>Extraction was initiated on url " + input_url + " . Saving to file: " + filename + ".csv<\h1>"
 
